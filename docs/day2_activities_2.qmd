@@ -1,0 +1,66 @@
+---
+title: "day2_activites_2"
+format: html
+editor: visual
+execute: 
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+## Part 2: Wild Data
+
+```{r}
+# read in data and clean names to all lower snake case
+mack_verts <- read_csv(here("data", "AS00601.csv")) %>% 
+  clean_names()
+```
+
+```{r}
+# Store the 5th value in column “WEIGHT” as mc_wt_5
+mc_wt_5 <- mack_verts$weight[5]
+# Store the 8th - 20th value in the “LENGTH1” column as mc_length_8_20
+mc_length_8_20 <- mack_verts$length1[8:20]
+
+```
+
+```{r}
+# Store everything in column SAMPLEDATE as a vector called mc_dates
+mc_dates <- mack_verts$sampledate
+
+```
+
+```{r}
+# Create a subset that only contains observations for Pacific Giant Salamanders (species Dicamptodon tenebrosus, stored in species as DITE). Store the subset as mc_salamanders. 
+mc_salamandars <- mack_verts %>% 
+  filter(species == "DITE")
+# Create a scatterplot of length1 (snout-vent length in millimeters) versus weight (grams) for all salamanders in the subset you created above, mc_salamanders. Update axis labels, title, subtitle, and add a caption with the data source. Customize point color and size, possibly opacity, and theme.
+salamandar_plot <- ggplot(data = mc_salamandars, aes(x = length1, y = weight)) +
+                            geom_point(color = "magenta") + 
+  labs(x = "snout-vent length in mm", y = "weight in grams", title = "Salamandar snout vent length and weight relationship", caption = "	
+Gregory, S.V. and I. Arismendi. 2020. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present ver 14. Environmental Data Initiative. https://doi.org/10.6073/pasta/7c78d662e847cdbe33584add8f809165 (Accessed 2023-08-15).") +
+  theme_minimal()
+salamandar_plot
+# Export your scatterplot as salamander_size.png to your figs folder
+ggsave(filename = here("figs", "salamandar_plot.png"))
+
+```
+
+```{r}
+# Similar to above, make a subset called mc_trout that only contains observations for cutthroat trout (species “ONCL”)
+mc_trout <- mack_verts %>% 
+  filter(species == "ONCL")
+# Create a scatterplot of length1 by weight for all trout in the dataset, Customize so that the point color depends on reach, Customize your color scheme (e.g. scale_color_manual()), Facet your plot by creek reach (facet_wrap(~...))
+trout_plot <- ggplot(data = mc_trout, aes(x = length1, y = weight, color = reach)) +
+                            geom_point() + 
+  scale_color_manual(values = c("orange", "purple", "black")) +
+  facet_wrap(~reach) +
+  labs(x = "snout-vent length in mm", y = "weight in grams", title = "Trout snout vent length and weight relationship") +
+  theme_minimal()
+trout_plot
+ggsave(filename = here("figs", "trout_plot.png"))
+```
